@@ -1,91 +1,51 @@
-# DIO - Trilha .NET - Banco de Dados
-www.dio.me
+# Desafio SQL Server: Modelagem de Dados e Dominando Relacionamentos Muitos-para-Muitos (M:N)
 
-## Desafio de projeto
-Para este desafio, você precisará usar seus conhecimentos adquiridos no módulo de banco de dados, da trilha .NET da DIO.
+## Visão Geral
 
-## Contexto
-Você é responsável pelo banco de dados de um site de filmes, onde são armazenados dados sobre os filmes e seus atores. Sendo assim, foi solicitado para que você realize uma consulta no banco de dados com o objetivo de trazer alguns dados para análises.
+Este repositório documenta a resolução de um conjunto de exercícios de fixação em SQL (Dialeto SQL Server), com foco em Data Query Language (DQL).
 
-## Proposta
-Você precisará realizar 12 consultas ao banco de dados, cada uma retornando um tipo de informação.
-O seu banco de dados está modelado da seguinte maneira:
+A base de dados utilizada modela um catálogo de filmes, atores e gêneros. O principal objetivo foi garantir a precisão e a integridade da consulta, especialmente na manipulação de chaves primárias e estrangeiras em **relacionamentos complexos M:N (Muitos-para-Muitos)**.
 
-![Diagrama banco de dados](Imagens/diagrama.png)
+O código completo de todas as soluções pode ser consultado no arquivo **`SQLQuery2.sql`**.
 
-As tabelas sao descritas conforme a seguir:
+---
 
-**Filmes**
+## O Ponto Crítico: Relacionamentos M:N
 
-Tabela responsável por armazenar informações dos filmes.
+O desafio técnico central deste exercício foi a extração de dados através de tabelas de ligação, essenciais para resolver os relacionamentos Muitos-para-Muitos.
 
-**Atores**
+Um erro comum é tentar ligar tabelas que não se comunicam diretamente (por exemplo, `Filmes` e `Generos`), resultando em consultas ineficientes ou incorretas. A solução exige a inclusão de uma terceira tabela intermediária no `JOIN` (a tabela de ligação), utilizando as chaves estrangeiras (`IdFilme`, `IdGenero`, `IdAtor`) para rastrear o caminho lógico.
 
-Tabela responsável por armazenar informações dos atores.
+### Prova de Domínio I: Filmes e Gêneros (OBJETIVO 10)
 
-**Generos**
+Esta consulta liga `Filmes` a `Generos` usando a tabela **`FilmesGenero`** como intermediária, garantindo a visualização de todos os gêneros de um filme.
 
-Tabela responsável por armazenar os gêneros dos filmes.
+```sql
+SELECT
+	Filmes.Nome,
+	Generos.Genero
+FROM Filmes
+INNER JOIN FilmesGenero -- Tabela de Ligação
+	ON Filmes.Id = FilmesGenero.IdFilme  -- Liga Filmes ao link
+INNER JOIN Generos
+	ON Generos.Id = FilmesGenero.IdGenero; -- Liga o link a Generos
+```
+<img width="276" height="390" alt="image" src="https://github.com/user-attachments/assets/a58b8f54-7797-4246-aabb-0d930cffcba4" />
 
-**ElencoFilme**
+### Prova de Domínio II: Filmes, Atores e Papéis (OBJETIVO 12)
+```sql
+SELECT
+	Filmes.Nome,
+	Atores.PrimeiroNome,
+	Atores.UltimoNome,
+	ElencoFilme.Papel
+FROM Filmes
+INNER JOIN ElencoFilme -- Tabela de Ligação
+	ON Filmes.Id = ElencoFilme.IdFilme -- Liga Filmes ao link
+INNER JOIN Atores
+	ON Atores.Id = ElencoFilme.IdAtor; -- Liga o link a Atores
+```
+<img width="501" height="396" alt="image" src="https://github.com/user-attachments/assets/93a8e8f0-b4f5-4391-bbcf-c7a0a75e2199" />
 
-Tabela responsável por representar um relacionamento do tipo muitos para muitos entre filmes e atores, ou seja, um ator pode trabalhar em muitos filmes, e filmes
-podem ter muitos atores.
-
-**FilmesGenero**
-
-Tabela responsável por representar um relacionamento do tipo muitos para muitos entre filmes e gêneros, ou seja, um filme pode ter mais de um gênero, e um genêro pode fazer parte de muitos filmes.
-
-## Preparando o banco de dados
-Você deverá executar o arquivo **Script Filmes.sql** em seu banco de dados SQL Server, presente na pasta Scripts deste repositório ([ou clique aqui](Script%20Filmes.sql)). Esse script irá criar um banco chamado **Filmes**, contendo as tabelas e os dados necessários para você realizar este desafio.
-
-## Objetivo
-Você deverá criar diversas consultas, com o objetivo de retornar os dados a seguir. Abaixo de cada pedido tem o retorno esperado. O seu retorno deve ser igual ao da imagem.
-
-## 1 - Buscar o nome e ano dos filmes
-
-![Exercicio 1](Imagens/1.png)
-
-## 2 - Buscar o nome e ano dos filmes, ordenados por ordem crescente pelo ano
-
-![Exercicio 2](Imagens/2.png)
-
-## 3 - Buscar pelo filme de volta para o futuro, trazendo o nome, ano e a duração
-
-![Exercicio 3](Imagens/3.png)
-
-## 4 - Buscar os filmes lançados em 1997
-
-![Exercicio 4](Imagens/4.png)
-
-## 5 - Buscar os filmes lançados APÓS o ano 2000
-
-![Exercicio 5](Imagens/5.png)
-
-## 6 - Buscar os filmes com a duracao maior que 100 e menor que 150, ordenando pela duracao em ordem crescente
-
-![Exercicio 6](Imagens/6.png)
-
-## 7 - Buscar a quantidade de filmes lançadas no ano, agrupando por ano, ordenando pela duracao em ordem decrescente
-
-![Exercicio 7](Imagens/7.png)
-
-## 8 - Buscar os Atores do gênero masculino, retornando o PrimeiroNome, UltimoNome
-
-![Exercicio 8](Imagens/8.png)
-
-## 9 - Buscar os Atores do gênero feminino, retornando o PrimeiroNome, UltimoNome, e ordenando pelo PrimeiroNome
-
-![Exercicio 9](Imagens/9.png)
-
-## 10 - Buscar o nome do filme e o gênero
-
-![Exercicio 10](Imagens/10.png)
-
-## 11 - Buscar o nome do filme e o gênero do tipo "Mistério"
-
-![Exercicio 11](Imagens/11.png)
-
-## 12 - Buscar o nome do filme e os atores, trazendo o PrimeiroNome, UltimoNome e seu Papel
-
-![Exercicio 12](Imagens/12.png)
+### Sumário de Objetivos e Cláusulas Chave
+<img width="681" height="178" alt="image" src="https://github.com/user-attachments/assets/48d5e930-007f-4802-9b5a-ac457496aeae" />
